@@ -23,7 +23,7 @@ export const site = {
   whatsapp: '', // TODO: e.g. '8801XXXXXXXXX'
 
   socials: {
-    github: '', // TODO: 'https://github.com/<username>'
+    github: 'https://github.com/Tasfi18',
     linkedin: '', // TODO: 'https://www.linkedin.com/in/<username>'
     fiverr: 'https://www.fiverr.com/tahmid_hasan_18',
   },

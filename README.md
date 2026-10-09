@@ -27,7 +27,7 @@ The dev server prints its local URL (default `http://localhost:5173`).
 These are placeholders in `src/config/site.js`. Empty values hide the parts of the page that use them.
 
 - `phone` and `whatsapp`
-- `socials.github` and `socials.linkedin`
+- `socials.linkedin`
 - `url`, then add the canonical and `og:url` tags in `index.html`
 
 In `src/config/content.js`, each project has empty `repo` and `live` fields. Fill them in and the buttons appear; while they are empty the project shows an "Ask me about this project" button instead. A project can also take an `image` (import it at the top of the file) to replace its drawing with a screenshot.
