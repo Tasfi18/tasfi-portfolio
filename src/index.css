@@ -1,0 +1,326 @@
+@import "tailwindcss";
+
+/* ===========================================================================
+   Design plan
+
+   The site is a drawing set. Every section is one sheet of it, drawn in
+   diazo-print ink on cool whiteprint paper, with the conventions an architect
+   would recognise: a sheet border with grid references, oblique-tick
+   dimension lines, a title block, revision triangles and red-pencil markup.
+   The last sheet, Contact, is printed as a blueprint.
+
+   Color
+     paper    #ECEFF3  cool whiteprint ground
+     paper-2  #DFE4EB  the darker sheet, for wells and hatch
+     ink      #1F2468  diazo blue-violet line and text
+     ink-2    #474D86  secondary text (about 7:1 on paper)
+     cyan     #4AA3D3  non-photo-blue construction lines, decoration only
+     red      #D63F2A  red-pencil markup: active states, revisions
+     cyano    #143C6E  blueprint ground for the contact sheet
+     chalk    #E4EEF8  blueprint line and text
+
+   Type
+     Big Shoulders (variable, optical size): headings and drafting lettering.
+       Large sizes pick up the Display cut, small sizes the Text cut.
+     Big Shoulders Stencil: the hero wordmark only, like a lettering stencil.
+     Instrument Sans: running text.
+
+   Layout
+     Left-aligned throughout. Sheets run full width with a 24px drafting grid
+     behind them and content in a 1400px frame.
+   =========================================================================== */
+
+/* `static` keeps every token as a CSS variable even when no class uses it:
+   the SVG drawings and the game canvas read them directly. */
+@theme static {
+  --color-paper: #ECEFF3;
+  --color-paper-2: #DFE4EB;
+  --color-ink: #1F2468;
+  --color-ink-2: #474D86;
+  --color-pencil: #9298B8;
+  --color-cyan: #4AA3D3;
+  --color-red: #D63F2A;
+  --color-cyano: #143C6E;
+  --color-cyano-2: #1B4B85;
+  --color-chalk: #E4EEF8;
+
+  --font-display: 'Big Shoulders Variable', 'Arial Narrow', 'Helvetica Neue', sans-serif;
+  --font-stencil: 'Big Shoulders Stencil Variable', 'Big Shoulders Variable', 'Arial Narrow', sans-serif;
+  --font-sans: 'Instrument Sans Variable', 'Helvetica Neue', Arial, sans-serif;
+
+  /* Motion vocabulary, shared with src/lib/motion.js.
+     expo   the house curve, long settle
+     swift  short tail, for controls that must feel immediate
+     spring overshoots a little, for things that pop open */
+  --ease-expo: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-swift: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+}
+
+:root {
+  --grid-minor: rgb(31 36 104 / 0.045);
+  --grid-major: rgb(31 36 104 / 0.085);
+}
+
+html,
+body {
+  scroll-behavior: smooth;
+  /* The navbar is fixed; anchor jumps stop short of it. */
+  scroll-padding-top: 5.5rem;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  color-scheme: light;
+  font-family: var(--font-sans);
+  font-optical-sizing: auto;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--color-red);
+  color: var(--color-paper);
+}
+
+/* Thin, ink-coloured scrollbar rather than none: a portfolio is long and the
+   scroll position is useful. */
+html {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-ink) var(--color-paper);
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+/* The site's own classes sit in the components layer so a Tailwind utility
+   on the same element (absolute, bg-*, font-*) always wins over them. */
+@layer components {
+/* ---------------------------------------------------------------------------
+   Paper
+   --------------------------------------------------------------------------- */
+
+/* The drafting grid: 24px minor squares inside 120px major ones. */
+.paper-grid {
+  background-color: var(--color-paper);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  background-position: -1px -1px;
+}
+
+.blueprint-grid {
+  --grid-minor: rgb(228 238 248 / 0.07);
+  --grid-major: rgb(228 238 248 / 0.14);
+  background-color: var(--color-cyano);
+  background-image:
+    linear-gradient(var(--grid-major) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-major) 1px, transparent 1px),
+    linear-gradient(var(--grid-minor) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-minor) 1px, transparent 1px);
+  background-size: 120px 120px, 120px 120px, 24px 24px, 24px 24px;
+  background-position: -1px -1px;
+}
+
+/* Section hatch, the 45-degree lines a drawing uses for a cut surface. */
+.hatch {
+  background-image: repeating-linear-gradient(
+    -45deg,
+    var(--hatch, rgb(31 36 104 / 0.16)) 0 1px,
+    transparent 1px 8px
+  );
+}
+
+/* Drafting lettering: small, upright capitals with a little air, the way
+   notes are lettered on a drawing. Only used where a drawing would letter. */
+.lettering {
+  font-family: var(--font-display);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------------------------------------------------------------------------
+   Dimension line, architectural style: a hairline with oblique ticks at each
+   end and short extension lines. The label sits on a paper-coloured patch so
+   the line appears to break around it.
+   --------------------------------------------------------------------------- */
+.dim {
+  position: relative;
+  height: 1px;
+  background: currentColor;
+}
+
+.dim::before,
+.dim::after {
+  content: '';
+  position: absolute;
+  top: -7px;
+  width: 1px;
+  height: 15px;
+  background: currentColor;
+}
+
+.dim::before { left: 0; }
+.dim::after { right: 0; }
+
+.dim > i {
+  position: absolute;
+  top: -5px;
+  width: 1px;
+  height: 11px;
+  background: currentColor;
+  transform: rotate(45deg);
+}
+
+.dim > i:first-of-type { left: 0; }
+.dim > i:last-of-type { right: 0; }
+
+/* A smaller dimension for underlines. */
+.dim-sm::before,
+.dim-sm::after { top: -3px; height: 7px; }
+.dim-sm > i { top: -3px; height: 7px; }
+
+.dim-label {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  transform: translate(-50%, -50%);
+  padding: 0 0.75em;
+  background: var(--dim-bg, var(--color-paper));
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------------
+   Stack tape. Each row is a strip of measuring tape: ticks along the top edge,
+   names printed along it. The track holds two identical groups and slides by
+   exactly one, so the seam never shows.
+   --------------------------------------------------------------------------- */
+@keyframes tape {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-50%, 0, 0); }
+}
+
+.tape {
+  position: relative;
+  overflow: hidden;
+  background-image:
+    repeating-linear-gradient(90deg, var(--color-ink) 0 1px, transparent 1px 48px),
+    repeating-linear-gradient(90deg, rgb(31 36 104 / 0.45) 0 1px, transparent 1px 12px);
+  background-size: 100% 10px, 100% 5px;
+  background-repeat: no-repeat;
+  background-position: 0 0, 0 0;
+}
+
+.tape-track {
+  display: flex;
+  width: max-content;
+  will-change: transform;
+  animation: tape var(--tape-duration, 40s) linear infinite;
+  animation-direction: var(--tape-direction, normal);
+}
+
+.tape:hover .tape-track,
+.tape:focus-within .tape-track {
+  animation-play-state: paused;
+}
+
+/* ---------------------------------------------------------------------------
+   Small motion pieces
+   --------------------------------------------------------------------------- */
+
+/* The "available" pulse: a ring that is drawn outward and fades, like a
+   compass sweep, rather than a blinking dot. */
+@keyframes sweep {
+  0% { transform: scale(0.6); opacity: 0.9; }
+  80%, 100% { transform: scale(2.4); opacity: 0; }
+}
+
+.animate-sweep {
+  animation: sweep 2.6s var(--ease-expo) infinite;
+}
+
+/* The page under the hero arrives by opacity only. A transform here would make
+   this wrapper the containing block for the pinned changelog shelf and detach
+   the pin from the viewport. */
+@keyframes site-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.animate-site-in {
+  animation: site-in 0.6s var(--ease-expo) both;
+}
+
+/* Underline drawn in red pencil, used on marked words in the bio. The width is
+   driven from script (GSAP) through --mark. */
+.pencil-mark {
+  --mark: 1;
+  background-image: linear-gradient(var(--color-red), var(--color-red));
+  background-repeat: no-repeat;
+  background-position: 0 92%;
+  background-size: calc(var(--mark) * 100%) 2px;
+}
+
+/* A link underline that is drawn from the left on hover. */
+.draw-link {
+  background-image: linear-gradient(currentColor, currentColor);
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size: 0% 1px;
+  transition: background-size 0.45s var(--ease-expo);
+}
+
+.draw-link:hover,
+.draw-link:focus-visible {
+  background-size: 100% 1px;
+}
+
+/* Visible keyboard focus everywhere, in red pencil. */
+:where(a, button, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-red);
+  outline-offset: 3px;
+}
+}
+
+/* ---------------------------------------------------------------------------
+   Paper fibre. A few percent of static noise so the ground reads as a sheet
+   rather than a flat fill. Rendered once from an SVG data URI and never
+   animated.
+   --------------------------------------------------------------------------- */
+.paper-fibre {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  pointer-events: none;
+  opacity: 0.05;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.12 0 0 0 0 0.14 0 0 0 0 0.4 0 0 0 1 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ---------------------------------------------------------------------------
+   View transition into and out of the archive page.
+   --------------------------------------------------------------------------- */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
+  animation-timing-function: var(--ease-expo);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
+  }
+}
