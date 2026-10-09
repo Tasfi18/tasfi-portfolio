@@ -22,7 +22,6 @@ export const facts = [
   { label: 'Now', value: 'Tech Apprentice, IT Department, IDLC Finance PLC' },
   { label: 'Studied', value: 'BSc in CSE, Khulna University, 2025' },
   { label: 'Before', value: 'Mind Pixel BD, FlyRank AI, Dohatec New Media' },
-  { label: 'Also', value: 'Co-founder and director, LUMIQA Private Limited' },
 ];
 
 // The stack, as a schedule of materials. Each row scrolls on its own.
