@@ -210,18 +210,6 @@ export const projects = [
 // year and month of each entry (LUMIQA's is its registration).
 export const changelog = [
   {
-    version: '2026.10',
-    period: '2026 to now',
-    status: 'Current',
-    title: 'Co-founder and Director',
-    org: 'LUMIQA Private Limited',
-    place: 'Khulna',
-    added: [
-      'Co-founded with three partners and registered with RJSC',
-      'Preparing proposals for an institute website and a cafe counter system',
-    ],
-  },
-  {
     version: '2026.09',
     period: 'Sep 2026 to now',
     status: 'Current',
