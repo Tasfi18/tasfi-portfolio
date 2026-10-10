@@ -4,6 +4,8 @@ Personal portfolio built with React 19, Vite and Tailwind CSS v4, with GSAP for 
 
 The site is laid out as a set of drawing sheets: a drafted cover, an about sheet, a services index, project plates, a changelog of roles, a small game, and a blueprint contact sheet.
 
+![The cover sheet](docs/screenshot.png)
+
 ## Getting started
 
 ```bash
@@ -40,6 +42,8 @@ In `src/config/content.js`, each project has empty `repo` and `live` fields. Fil
 | `npm run build` | Production build to `dist/` |
 | `npm run preview` | Preview the production build locally |
 | `npm run lint` | Run ESLint |
+
+GitHub Actions runs the lint and the production build on every push.
 
 ## Project structure
 
